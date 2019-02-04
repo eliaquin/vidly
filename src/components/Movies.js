@@ -1,9 +1,12 @@
 import React, { Component } from "react";
+import Like from "./common/Like";
+import Pagination from "./common/Pagination";
 import { getMovies } from "./../services/fakeMovieService";
 
 class Movies extends Component {
   state = {
-    movies: getMovies()
+    movies: getMovies(),
+    pageSize: 4
   };
 
   renderLegend = () => {
@@ -21,6 +24,15 @@ class Movies extends Component {
     this.setState({ movies: newArr });
   };
 
+  handleLike = movie => {
+    const movies = [...this.state.movies];
+    const index = movies.indexOf(movie);
+    movies[index].liked = !movies[index].liked;
+    this.setState({
+      movies
+    });
+  };
+
   renderTable = () => {
     if (this.state.movies.length === 0) return null;
     return (
@@ -31,6 +43,7 @@ class Movies extends Component {
             <th>Genre</th>
             <th>Stock</th>
             <th>Rate</th>
+            <th />
             <th />
           </tr>
         </thead>
@@ -47,6 +60,9 @@ class Movies extends Component {
         <td>{movie.numberInStock}</td>
         <td>{movie.dailyRentalRate}</td>
         <td>
+          <Like liked={movie.liked} onClick={() => this.handleLike(movie)} />
+        </td>
+        <td>
           <button
             className="btn btn-sm btn-danger"
             onClick={() => {
@@ -60,11 +76,20 @@ class Movies extends Component {
     ));
   };
 
+  handlePageChange = page => {
+    console.log(page);
+  };
+
   render() {
     return (
       <React.Fragment>
         {this.renderLegend()}
         {this.renderTable()}
+        <Pagination
+          numberOfItems={this.state.movies.length}
+          numberOfItemsPerPage={this.state.pageSize}
+          onPageChange={this.handlePageChange}
+        />
       </React.Fragment>
     );
   }
